@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"design-pattern/configs"
+	"design-pattern/internal/builder"
 	"design-pattern/pkg/database"
 	"design-pattern/pkg/server"
 	"fmt"
@@ -12,22 +13,17 @@ import (
 	"time"
 )
 
-type User struct {
-	ID   int64
-	Name string
-}
-
 func main() {
 	cfg, err := configs.NewConfig(".env")
 	checkError(err)
 
-	_, err = database.InitDatabase(cfg.PostgresConfig)
+	db, err := database.InitDatabase(cfg.PostgresConfig)
 	checkError(err)
 
-	// init builder dan butuh db
-	// init routes
+	publicRoutes := builder.BuildPublicRoutes(db)
+	privateRoutes := builder.BuildPrivateRoutes()
 
-	srv := server.NewServer(cfg)
+	srv := server.NewServer(cfg, publicRoutes, privateRoutes)
 	runServer(srv, cfg.PORT)
 	waitForShutdown(srv)
 }
