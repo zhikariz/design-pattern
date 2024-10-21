@@ -20,8 +20,8 @@ func main() {
 	db, err := database.InitDatabase(cfg.PostgresConfig)
 	checkError(err)
 
-	publicRoutes := builder.BuildPublicRoutes(db)
-	privateRoutes := builder.BuildPrivateRoutes()
+	publicRoutes := builder.BuildPublicRoutes(cfg, db)
+	privateRoutes := builder.BuildPrivateRoutes(cfg, db)
 
 	srv := server.NewServer(cfg, publicRoutes, privateRoutes)
 	runServer(srv, cfg.PORT)

@@ -36,10 +36,12 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 			response.ErrorResponse(http.StatusBadRequest, err.Error()))
 	}
 
-	user, err := h.userService.Login(ctx.Request().Context(), loginRequest.Username, loginRequest.Password)
+	token, err := h.userService.Login(ctx.Request().Context(), loginRequest.Username, loginRequest.Password)
 	if err != nil {
 		return ctx.JSON(http.StatusUnauthorized, response.ErrorResponse(http.StatusUnauthorized, err.Error()))
 	}
 
-	return ctx.JSON(http.StatusOK, response.SuccessResponse("successfully login", user))
+	return ctx.JSON(http.StatusOK, response.SuccessResponse("successfully login", map[string]interface{}{
+		"token": token,
+	}))
 }
