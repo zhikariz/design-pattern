@@ -4,7 +4,9 @@ import (
 	"context"
 	"design-pattern/internal/entity"
 	"design-pattern/internal/repository"
+	"design-pattern/pkg/cache"
 	"design-pattern/pkg/token"
+	"encoding/json"
 	"errors"
 	"log"
 	"time"
@@ -20,21 +22,43 @@ type UserService interface {
 type userService struct {
 	userRepository repository.UserRepository
 	tokenUseCase   token.TokenUseCase
+	cacheable      cache.Cacheable
 }
 
 func NewUserService(
 	userRepository repository.UserRepository,
 	tokenUseCase token.TokenUseCase,
+	cacheable cache.Cacheable,
 ) UserService {
-	return &userService{userRepository, tokenUseCase}
+	return &userService{userRepository, tokenUseCase, cacheable}
 }
 
-func (s *userService) FindAll(ctx context.Context) ([]entity.User, error) {
-	users, err := s.userRepository.FindAll(ctx)
-	if err != nil {
-		return nil, err
+func (s *userService) FindAll(ctx context.Context) (result []entity.User, err error) {
+	keyFindAll := "design-patternn-api:users:find-all"
+	data := s.cacheable.Get(keyFindAll)
+	if data == "" {
+		result, err = s.userRepository.FindAll(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		marshalledData, err := json.Marshal(result)
+		if err != nil {
+			return nil, err
+		}
+
+		err = s.cacheable.Set(keyFindAll, marshalledData, 5*time.Minute)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err = json.Unmarshal([]byte(data), &result)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return users, nil
+
+	return result, nil
 }
 
 func (s *userService) Login(ctx context.Context, username, password string) (string, error) {

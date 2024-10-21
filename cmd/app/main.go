@@ -4,6 +4,7 @@ import (
 	"context"
 	"design-pattern/configs"
 	"design-pattern/internal/builder"
+	"design-pattern/pkg/cache"
 	"design-pattern/pkg/database"
 	"design-pattern/pkg/server"
 	"fmt"
@@ -20,8 +21,10 @@ func main() {
 	db, err := database.InitDatabase(cfg.PostgresConfig)
 	checkError(err)
 
-	publicRoutes := builder.BuildPublicRoutes(cfg, db)
-	privateRoutes := builder.BuildPrivateRoutes(cfg, db)
+	rdb := cache.InitCache(cfg.RedisConfig)
+
+	publicRoutes := builder.BuildPublicRoutes(cfg, db, rdb)
+	privateRoutes := builder.BuildPrivateRoutes(cfg, db, rdb)
 
 	srv := server.NewServer(cfg, publicRoutes, privateRoutes)
 	runServer(srv, cfg.PORT)

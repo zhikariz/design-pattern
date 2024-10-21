@@ -9,3 +9,6 @@ migrate-down:
 
 migrate:
 	migrate -path db/migrations -database postgres://$(username):$(password)@localhost:5432/$(database)?sslmode=disable up
+
+mockgen:
+	sh ./bin/generate-mock.sh
