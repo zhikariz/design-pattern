@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -43,5 +44,26 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, response.SuccessResponse("successfully login", map[string]interface{}{
 		"token": token,
+	}))
+}
+
+func (h *UserHandler) GeneratePassword(ctx echo.Context) error {
+	var generatePasswordRequest struct {
+		Password string `param:"password"`
+	}
+
+	if err := ctx.Bind(&generatePasswordRequest); err != nil {
+		return ctx.JSON(http.StatusBadRequest,
+			response.ErrorResponse(http.StatusBadRequest, err.Error()))
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(generatePasswordRequest.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError,
+			response.ErrorResponse(http.StatusInternalServerError, err.Error()))
+	}
+
+	return ctx.JSON(http.StatusOK, response.SuccessResponse("successfully generate password", map[string]interface{}{
+		"password": string(hashedPassword),
 	}))
 }

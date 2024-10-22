@@ -14,6 +14,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserTestSuite struct {
@@ -68,8 +69,9 @@ func (s *UserTestSuite) TestFindAll() {
 
 func (s *UserTestSuite) TestLogin() {
 	username, password := "test", "test"
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	user := new(entity.User)
-	user.Password = password
+	user.Password = string(hashedPassword)
 	s.Run("failed to login due to error find by username", func() {
 		s.repo.EXPECT().FindByUsername(gomock.Any(), username).Return(nil, errors.New("error"))
 		token, err := s.userService.Login(context.Background(), username, password)

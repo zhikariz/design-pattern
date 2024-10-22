@@ -13,6 +13,11 @@ func PublicRoutes(userHandler handler.UserHandler) []route.Route {
 			Path:    "/login",
 			Handler: userHandler.Login,
 		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/generate-password/:password",
+			Handler: userHandler.GeneratePassword,
+		},
 	}
 }
 

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService interface {
@@ -68,7 +69,7 @@ func (s *userService) Login(ctx context.Context, username, password string) (str
 		return "", errors.New("username or password invalid")
 	}
 
-	if user.Password != password {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return "", errors.New("username or password invalid")
 	}
 
