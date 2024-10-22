@@ -1,0 +1,14 @@
+ENV: "dev"
+PORT: "8080"
+POSTGRES:
+  HOST: "localhost"
+  PORT: "5432"
+  USER: "postgres"
+  PASSWORD: "mysecretpassword"
+  DATABASE: "design-pattern"
+JWT:
+  SECRET_KEY: "asdaxzmcnzxdlajsdrqworukk"
+REDIS:
+  HOST: "localhost"
+  PORT: "6379"
+  PASSWORD: ""

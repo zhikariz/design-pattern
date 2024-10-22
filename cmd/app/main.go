@@ -15,7 +15,8 @@ import (
 )
 
 func main() {
-	cfg, err := configs.NewConfig(".env")
+	// cfg, err := configs.NewConfig(".env")
+	cfg, err := configs.NewConfigYaml("config.yaml")
 	checkError(err)
 
 	db, err := database.InitDatabase(cfg.PostgresConfig)
