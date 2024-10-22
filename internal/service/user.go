@@ -34,7 +34,7 @@ func NewUserService(
 }
 
 func (s *userService) FindAll(ctx context.Context) (result []entity.User, err error) {
-	keyFindAll := "design-patternn-api:users:find-all"
+	keyFindAll := "design-pattern-api:users:find-all"
 	data := s.cacheable.Get(keyFindAll)
 	if data == "" {
 		result, err = s.userRepository.FindAll(ctx)
