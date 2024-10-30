@@ -1,7 +1,7 @@
 ENV: "dev"
 PORT: "8080"
 POSTGRES:
-  HOST: "localhost"
+  HOST: "host.docker.internal"
   PORT: "5432"
   USER: "postgres"
   PASSWORD: "mysecretpassword"
